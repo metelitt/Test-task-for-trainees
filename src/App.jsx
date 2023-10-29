@@ -1,11 +1,11 @@
 import React from 'react';
-import { Box, Flex, Button } from '@chakra-ui/react';
+import { Box, Flex,Button } from '@chakra-ui/react';
 import { Column } from './components/Column';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { reorderColumnTasks } from './redux/slices/ColumnSlice';
-import { useTheme } from './assets/ThemeContext';
+import {useTheme } from './assets/ThemeContext';
 function App() {
   const { isDarkMode, toggleTheme } = useTheme();
   const columns = useSelector((state) => state.column.columns);
@@ -31,16 +31,11 @@ function App() {
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Box
-        minHeight={'100vh'}
-        overflow={'hidden'}
-        p={5}
-        bg={isDarkMode ? 'gray.700' : 'gray.200'}
-        color={isDarkMode ? 'white' : 'black'}
-      >
-        <Button onClick={toggleTheme}>
-          {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        </Button>
+      <Box minHeight={'100vh'} overflow={'hidden'} p={5}  bg={isDarkMode ? 'gray.700' : 'gray.200'}
+  color={isDarkMode ? 'white' : 'black'}>
+      <Button onClick={toggleTheme}>
+        {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      </Button>
         <Flex
           w={['100%', '100%', '100%', '100%']}
           direction={['column', 'column', 'row', 'row']}
