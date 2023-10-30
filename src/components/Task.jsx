@@ -1,9 +1,30 @@
-import { Box, Flex, IconButton, Text } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
+import React, { useState } from 'react';
+import { Box, Flex, Text, IconButton, Input } from '@chakra-ui/react';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { useDispatch } from 'react-redux';
+import { updateTaskContent } from '../redux/slices/TaskSlice';
 
 export function Task({ task, handleDeleteTask }) {
+  const dispatch = useDispatch();
+  const [isEditing, setIsEditing] = useState(false);
+  const [taskText, setTaskText] = useState(task.content);
+
   const onDeleteClick = () => {
     handleDeleteTask(task.id);
+  };
+
+  const onEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const onSaveClick = () => {
+    dispatch(updateTaskContent({ taskId: task.id, newContent: taskText }));
+    setIsEditing(false);
+  };
+
+  const onCancelClick = () => {
+    setTaskText(task.content);
+    setIsEditing(false);
   };
   return (
     <Box
@@ -17,19 +38,23 @@ export function Task({ task, handleDeleteTask }) {
       justifyContent="space-between"
       wordBreak="break-word"
     >
-      <Flex flexDirection="column">
-        <Text>{task.content}</Text>
-        <Text fontSize="sm" color="gray.600">
-          {task.date}
-        </Text>
-      </Flex>
-      <IconButton
-        icon={<DeleteIcon />}
-        variant="ghost"
-        size="sm"
-        onClick={onDeleteClick}
-        aria-label="Delete Task"
-      />
+      {!isEditing ? (
+        <Flex flexDirection="column">
+          <Text>{taskText}  {task.date}</Text>
+          <Flex>
+            <IconButton icon={<EditIcon />} variant="ghost" size="sm" onClick={onEditClick} aria-label="Edit Task" />
+            <IconButton icon={<DeleteIcon />} variant="ghost" size="sm" onClick={onDeleteClick} aria-label="Delete Task" />
+          </Flex>
+        </Flex>
+      ) : (
+        <Flex flexDirection="column">
+          <Input value={taskText} onChange={(e) => setTaskText(e.target.value)} />
+          <Flex>
+            <IconButton icon={<EditIcon />} variant="ghost" size="sm" onClick={onSaveClick} aria-label="Save Task" />
+            <IconButton icon={<DeleteIcon />} variant="ghost" size="sm" onClick={onCancelClick} aria-label="Cancel Edit" />
+          </Flex>
+        </Flex>
+      )}
     </Box>
   );
 }
