@@ -1,6 +1,24 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialColumnsState = {
+interface Task {
+  id: string;
+  content: string;
+}
+
+export interface Column {
+  id: string;
+  title: string;
+  taskIds: string[];
+  color: string;
+}
+
+interface ColumnsState {
+  columns: { [key: string]: Column };
+  tasks: { [key: string]: Task };
+  columnOrder: string[];
+}
+
+const initialColumnsState: ColumnsState = {
   columns: {
     'column-1': {
       id: 'column-1',
@@ -35,19 +53,26 @@ const columnsSlice = createSlice({
   name: 'columns',
   initialState: initialColumnsState,
   reducers: {
-    deleteTaskFromColumn(state, action) {
+    deleteTaskFromColumn(state, action: PayloadAction<{ columnId: string; taskId: string }>) {
       const { columnId, taskId } = action.payload;
       state.columns[columnId].taskIds = state.columns[columnId].taskIds.filter(
         (id) => id !== taskId,
       );
       delete state.tasks[taskId];
     },
-    addTaskToColumn(state, action) {
+    updateTaskColumn(state, action: PayloadAction<{ taskId: string; newContent: string }>) {
+      const { taskId, newContent } = action.payload;
+      state.tasks[taskId].content = newContent;
+    },
+    addTaskToColumn(state, action: PayloadAction<{ columnId: string; task: Task }>) {
       const { columnId, task } = action.payload;
       state.columns[columnId].taskIds.push(task.id);
       state.tasks[task.id] = task;
     },
-    reorderColumnTasks(state, action) {
+    reorderColumnTasks(
+      state,
+      action: PayloadAction<{ source: any; destination: any }> 
+    ) {
       const { source, destination } = action.payload;
       if (!source || !source.droppableId) {
         console.error('Некорректное значение source или source.droppableId');
@@ -81,6 +106,6 @@ const columnsSlice = createSlice({
     },
   },
 });
-export const { addTaskToColumn, deleteTaskFromColumn, reorderColumnTasks } =
+export const { addTaskToColumn, deleteTaskFromColumn, reorderColumnTasks,updateTaskColumn } =
   columnsSlice.actions;
 export default columnsSlice.reducer;

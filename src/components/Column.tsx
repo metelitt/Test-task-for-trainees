@@ -16,7 +16,7 @@ import {
   FormControl,
   FormLabel,
 } from '@chakra-ui/react';
-import { Task } from './Task';
+import  Task  from './Task';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import {
@@ -24,15 +24,30 @@ import {
   addTaskToColumn,
 } from '../redux/slices/ColumnSlice';
 import { addTask, deleteTask } from '../redux/slices/TaskSlice';
-export function Column({ column, tasks }) {
+interface TaskProp {
+  id: string;
+  content: string;
+  date: string;
+}
+
+interface ColumnProps {
+  column: {
+    id: string;
+    title: string;
+    taskIds: string[];
+    color: string;
+  };
+  tasks: TaskProp[];
+}
+const Column: React.FC<ColumnProps> = ({ column, tasks }) => {
   const dispatch = useDispatch();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const [newTaskText, setNewTaskText] = useState('');
-
-  const handleDeleteTask = (taskId) => {
+  const handleDeleteTask = (taskId: string) => {
     dispatch(deleteTaskFromColumn({ columnId: column.id, taskId }));
     dispatch(deleteTask(taskId));
   };
+
   const handleAddTask = () => {
     if (newTaskText) {
       const currentDate = new Date();
@@ -52,6 +67,7 @@ export function Column({ column, tasks }) {
     }
   };
 
+
   return (
     <Droppable droppableId={column.id}>
       {(provided, snapshot) => (
@@ -61,7 +77,6 @@ export function Column({ column, tasks }) {
           borderRadius="md"
           padding="4"
           bg={snapshot.isDraggingOver ? 'blue.10' : 'blackAlpha.600'}
-          spacing={2}
           width="250px"
           minHeight="600px"
           p={2}
@@ -99,7 +114,7 @@ export function Column({ column, tasks }) {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <Task task={task} handleDeleteTask={handleDeleteTask} />
+                    <Task task={task} handleDeleteTask={handleDeleteTask}/>
                   </Box>
                 )}
               </Draggable>
@@ -138,12 +153,14 @@ export function Column({ column, tasks }) {
                   Отменить
                 </Button>
                 <Button
-                  colorScheme="blue"
-                  onClick={handleAddTask}
-                  onClose={() => setIsAddTaskModalOpen(false)}
-                >
-                  Добавить
-                </Button>
+  colorScheme="blue"
+  onClick={() => {
+    handleAddTask();
+    setIsAddTaskModalOpen(false);
+  }}
+>
+  Добавить
+</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
@@ -152,3 +169,4 @@ export function Column({ column, tasks }) {
     </Droppable>
   );
 }
+export default Column;
